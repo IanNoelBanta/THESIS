@@ -6,7 +6,7 @@ import time
 
 cap = cv2.VideoCapture(0)
 
-arduino = serial.Serial('COM6', baudrate=9600, timeout=0)
+# arduino = serial.Serial('COM6', baudrate=9600, timeout=0)
 # arduino = pyfirmata.Arduino("COM4")
 # servo = arduino.get_pin('d:8:s')
 
@@ -20,7 +20,7 @@ while True:
     hands, img = detector.findHands(img, draw=True, flipType=False)
 
     if hands:
-        arduino.write(b'r')
+        # arduino.write(b'r')
         hand1 = hands[0]  # Get the first hand detected
         lmList1 = hand1["lmList"]  # List of 21 landmarks for the first hand
         bbox1 = hand1["bbox"]  # Bounding box around the first hand (x,y,w,h coordinates)
@@ -61,7 +61,7 @@ while True:
     cv2.imshow("Image", img)
 
     if cv2.waitKey(1) == ord('x'):
-        arduino.close()
+        # arduino.close()
         break
 
 cap.release()
