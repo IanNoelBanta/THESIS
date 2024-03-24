@@ -4,6 +4,11 @@ int xPul = 3;
 int yDir = 4;
 int yPul = 5;
 
+int upButton = 8;
+int downButton = 9;
+int leftButton = 10;
+int rightButton = 11;
+
 String action, xCommand, yCommand;
 
 void setup() {
@@ -18,100 +23,96 @@ void setup() {
 }
 
 void loop() {
-  while (!Serial.available())
-    ;
-
+  while (!Serial.available());
   action = Serial.readString();
 
-  if (action == "BR") {
-    bottomRight();
-  } else if (action == "TR") {
-    topRight();
-  } else if (action == "BL") {
-    bottomLeft();
-  } else if (action == "TL") {
-    topLeft();
+// ---------- BUTTON ---------- 
+
+  if (digitalRead(upButton)) {
+    action = "UP";
+  } else if (digitalRead(downButton)) {
+    action = "DOWN";
+  } else if (digitalRead(leftButton)) {
+    action = "LEFT";
+  } else if (digitalRead(rightButton)) {
+    action = "RIGHT";
+
+  } else if (digitalRead(upButton) && digitalRead(rightButton)) {
+    action = "UR";
+  } else if (digitalRead(upButton) && digitalRead(leftButton)) {
+    action = "UL";
+  } else if (digitalRead(downButton) && digitalRead(rightButton)) {
+    action = "DR";
+  } else if (digitalRead(downButton) && digitalRead(leftButton)) {
+    action = "DL";
+  } else {
+    action = "null";
+  }
+
+// ---------- UP, DOWN, LEFT, AND RIGHT ---------- 
+  if (action == "UP") { 
+    goUp();
+  } else if (action == "DOWN") {
+    goDown();
+  } else if (action == "LEFT") {
+    goLeft();
+  } else if (action == "RIGHT") {
+    goRight();
+
+// ---------- UP-RIGHT, UP-LEFT, DOWN-RIGHT, AND DOWN-LEFT ---------- 
+
+  } else if (action == "UR") {
+    goUp();
+    goRight();
+  } else if (action == "UL") {
+    goUp();
+    goLeft();
+  } else if (action == "DR") {
+    goDown();
+    goRight();
+  } else if (action == "DL") {
+    goDown();
+    goLeft();
+
+// ---------- STOP ON ORIGIN ---------- 
+
   } else {
     digitalWrite(xPul, LOW);
     digitalWrite(yPul, LOW);
   }
 
+}
 
-  // if (xCommand == "r") {
-  //   goRight();
-  // } else if (xCommand == "l") {
-  //   goLeft();
-  // } else {
-  //   digitalWrite(xPul, LOW);
-  // }
+// ----------- PULSE GENERATORS ----------- //
 
-  // if (yCommand == "u") {
-  //   goUp();
-  // } else if (yCommand == "d") {
-  //   goDown();
-  // } else {
-  //   digitalWrite(yPul, LOW);
-  // }
+void generateXPulses() {
+  digitalWrite(xPul, HIGH); // Generate pulse
+  digitalWrite(xPul, LOW);
+  delayMicroseconds(60);    // Delay between pulses
+}
+
+void generateYPulses() {
+  digitalWrite(xPul, HIGH); // Generate pulse
+  digitalWrite(xPul, LOW);
+  delayMicroseconds(60);    // Delay between pulses
 }
 
 void goUp() {
-  for (int i = 0; i < 6400; i++) {
     digitalWrite(yDir, LOW);
-    digitalWrite(yPul, HIGH);
-    delayMicroseconds(100);
-    digitalWrite(yPul, LOW);
-    delayMicroseconds(100);
-  }
+    generateYPulses();
 }
 
 void goDown() {
-  for (int i = 0; i < 6400; i++) {
     digitalWrite(yDir, HIGH);
-    digitalWrite(yPul, HIGH);
-    delayMicroseconds(100);
-    digitalWrite(yPul, LOW);
-    delayMicroseconds(100);
-  }
+    generateYPulses();
 }
 
 void goLeft() {
-  for (int i = 0; i < 3200; i++) {
     digitalWrite(xDir, HIGH);
-    digitalWrite(xPul, HIGH);
-    delayMicroseconds(150);
-    digitalWrite(xPul, LOW);
-    delayMicroseconds(150);
-  }
+    generateXPulses();
 }
 
 void goRight() {
-  for (int i = 0; i < 3200; i++) {
     digitalWrite(xDir, LOW);
-    digitalWrite(xPul, HIGH);
-    delayMicroseconds(150);
-    digitalWrite(xPul, LOW);
-    delayMicroseconds(150);
-  }
-}
-
-// -------------
-
-void topLeft() {
-  goUp();
-  goLeft();
-}
-
-void topRight() {
-  goUp();
-  goRight();
-}
-
-void bottomLeft() {
-  goDown();
-  goLeft();
-}
-
-void bottomRight() {
-  goDown();
-  goRight();
+    generateXPulses();
 }
