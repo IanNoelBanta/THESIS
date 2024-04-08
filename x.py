@@ -22,7 +22,7 @@ while True:
 
     if hands:
         hand1 = hands[0]
-        lmList1 = hand1["lmList"]  
+        lmList1 = hand1["lmList"]
         finger = lmList1[8][0:2]
 
 
@@ -30,9 +30,10 @@ while True:
         cv2.line(img, (x-50,y), (x+50,y), (255, 0, 0), 10, 10)
         cv2.line(img, (x,y-50), (x,y+50), (255, 0, 0), 10, 10)
 
-        if x > int(640 / 2):
+        # working na yung targeting/locking
+        if x > 340:
             xCommand = 'r'
-        elif x < int(640 / 2):
+        elif x < 280:
             xCommand = 'l' 
         else:
             xCommand = 's'
