@@ -3,7 +3,7 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM7', timeout=0)
+arduino = serial.Serial(port = 'COM5', timeout=0)
 
 cap = cv2.VideoCapture(1)
 
@@ -38,8 +38,11 @@ while True:
         else:
             xCommand = 's'
 
-        print(xCommand)
-        arduino.write(str.encode(xCommand))
+    else:
+        xCommand = 's'
+
+    print(xCommand)
+    arduino.write(str.encode(xCommand))
     
     # center box plotting
     cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
