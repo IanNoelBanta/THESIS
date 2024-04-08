@@ -5,7 +5,7 @@ import time
 
 arduino = serial.Serial(port = 'COM7', timeout=0)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 detector = HandDetector(staticMode=False, maxHands=5, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
 
