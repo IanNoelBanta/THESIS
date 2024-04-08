@@ -3,15 +3,15 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM7', timeout=0)
+# arduino = serial.Serial(port = 'COM7', timeout=0)
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 detector = HandDetector(staticMode=False, maxHands=5, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
 
 center = (int(640/2), int(480/2))
-centerBoxStart = (center[0]-50, center[1]-50)
-centerBoxEnd = (center[0]+50, center[1]+50)
+centerBoxStart = (center[0]-20, center[1]-20)
+centerBoxEnd = (center[0]+20, center[1]+20)
 
 while True:
     success, img = cap.read()
@@ -30,18 +30,18 @@ while True:
         cv2.line(img, (x-50,y), (x+50,y), (255, 0, 0), 10, 10)
         cv2.line(img, (x,y-50), (x,y+50), (255, 0, 0), 10, 10)
 
-        if y > int(480 / 2):
+        if y > 260:
             yCommand = 'd'
-        elif y < int(480 / 2):
+        elif y < 220:
             yCommand = 'u' 
         else:
             yCommand = 's'
 
         print(yCommand)
-        arduino.write(str.encode(yCommand))
+        # arduino.write(str.encode(yCommand))
     
     # center box plotting
-    cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
+    cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 2, 2)
     # center dot
     cv2.line(img, center, center, (255, 0, 0), 10)
 
