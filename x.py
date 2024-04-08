@@ -38,8 +38,9 @@ while True:
         else:
             xCommand = 's'
 
-        print(xCommand)
-        arduino.write(str.encode(xCommand))
+    else:
+        xCommand = 's'
+
     
     # center box plotting
     cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
@@ -47,6 +48,9 @@ while True:
     cv2.line(img, center, center, (255, 0, 0), 10)
 
     cv2.imshow("Image", img)
+
+    print(xCommand)
+    arduino.write(str.encode(xCommand))
 
     if cv2.waitKey(1) == ord('x'):
         break
