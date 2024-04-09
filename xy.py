@@ -30,57 +30,45 @@ while True:
         cv2.line(img, (x-50,y), (x+50,y), (255, 0, 0), 10, 10)
         cv2.line(img, (x,y-50), (x,y+50), (255, 0, 0), 10, 10)
 
-        # if x > int(640 / 2):
-        #     xCommand = 'r'
-        # elif x < int(640 / 2):
-        #     xCommand = 'l' 
-        # else:
-        #     xCommand = 's'
 
-        # if y > int(480 / 2):
-        #     yCommand = 'd'
-        # elif y < int(480 / 2):
-        #     yCommand = 'u' 
-        # else:
-        #     yCommand = 's'
-
-        # command = xCommand + yCommand
 
         if finger[0] > centerBoxStart[0] and finger[0] < centerBoxEnd[0] and finger[1] > centerBoxStart[1] and finger[1] < centerBoxEnd[1]:
-            command = "S"
+            command = "ss"
             # print("TARGET LOCKED")
         else: 
             # (<, <) - Top Left
             if finger[0] < center[0] and finger[1] < center[1]:
                 XdistanceToCenter = center[0] - finger[0]
                 YdistanceToCenter = center[1] - finger[1]
-                command = "TL"
-                print(f"TOP LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
+                command = "lu"
+                # print(f"TOP LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
 
             # (>, <) - Top Right
             elif finger[0] > center[0] and finger[1] < center[1]:
                 XdistanceToCenter = finger[0] - center[0]
                 YdistanceToCenter = center[1] - finger[1]
-                command = "TR"
-                print(f"TOP RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
+                command = "ru"
+                # print(f"TOP RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
             
             # (<, >) - Bottom Left
             elif finger[0] < center[0] and finger[1] > center[1]:
                 XdistanceToCenter = center[0] - finger[0]
                 YdistanceToCenter = finger[1] - center[1]
-                command = "BL"
-                print(f"BOTTOM LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
+                command = "ld"
+                # print(f"BOTTOM LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
 
             # (>, >) - Bottom Right
             elif finger[0] > center[0] and finger[1] > center[1]:
                 XdistanceToCenter = finger[0] - center[0]
                 YdistanceToCenter = finger[1] - center[1]
-                command = "BR"
-                print(f"BOTTOM RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
-
-        # print(command)
-        arduino.write(str.encode(command))
+                command = "rd"
+                # print(f"BOTTOM RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
+    else:
+        command = "ss"
     
+    print(command)
+    arduino.write(str.encode(command))
+
     # center box plotting
     cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
     # center dot
@@ -93,3 +81,20 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+
+# if x > int(640 / 2):
+#     xCommand = 'r'
+# elif x < int(640 / 2):
+#     xCommand = 'l' 
+# else:
+#     xCommand = 's'
+
+# if y > int(480 / 2):
+#     yCommand = 'd'
+# elif y < int(480 / 2):
+#     yCommand = 'u' 
+# else:
+#     yCommand = 's'
+
+# # command = xCommand + yCommand
