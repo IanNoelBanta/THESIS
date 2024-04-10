@@ -3,15 +3,17 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM5', timeout=0)
+# arduino = serial.Serial(port = 'COM5', timeout=0)
+arduino = serial.Serial(port = 'COM7', baudrate=115200, timeout=0)
+
 
 cap = cv2.VideoCapture(1)
 
 detector = HandDetector(staticMode=False, maxHands=5, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
 
 center = (int(640/2), int(480/2))
-centerBoxStart = (center[0]-50, center[1]-50)
-centerBoxEnd = (center[0]+50, center[1]+50)
+centerBoxStart = (center[0]-20, center[1]-20)
+centerBoxEnd = (center[0]+20, center[1]+20)
 
 while True:
     success, img = cap.read()
