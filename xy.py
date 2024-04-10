@@ -3,7 +3,7 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM7', timeout=0)
+arduino = serial.Serial(port = 'COM7', baudrate=9600, timeout=0)
 
 cap = cv2.VideoCapture(1)
 
@@ -12,6 +12,9 @@ detector = HandDetector(staticMode=False, maxHands=5, modelComplexity=1, detecti
 center = (int(640/2), int(480/2))
 centerBoxStart = (center[0]-50, center[1]-50)
 centerBoxEnd = (center[0]+50, center[1]+50)
+
+isXGood = False
+isYGood = False
 
 while True:
     success, img = cap.read()
@@ -25,49 +28,37 @@ while True:
         lmList1 = hand1["lmList"]  
         finger = lmList1[8][0:2]
 
-
         x , y = lmList1[8][0:2]
-        cv2.line(img, (x-50,y), (x+50,y), (255, 0, 0), 10, 10)
-        cv2.line(img, (x,y-50), (x,y+50), (255, 0, 0), 10, 10)
+        cv2.line(img, (x-20,y), (x+20,y), (255, 0, 0), 3, 3)
+        cv2.line(img, (x,y-20), (x,y+20), (255, 0, 0), 3, 3)
 
+        if x > 340:
+            xCommand = 'r'
+        elif x < 280:
+            xCommand = 'l' 
+        else:
+            xCommand = 's'
 
+        if isXGood == False:
+            print(xCommand)
+            arduino.write(str.encode(xCommand))
 
-        if finger[0] > centerBoxStart[0] and finger[0] < centerBoxEnd[0] and finger[1] > centerBoxStart[1] and finger[1] < centerBoxEnd[1]:
-            command = "ss"
-            # print("TARGET LOCKED")
-        else: 
-            # (<, <) - Top Left
-            if finger[0] < center[0] and finger[1] < center[1]:
-                XdistanceToCenter = center[0] - finger[0]
-                YdistanceToCenter = center[1] - finger[1]
-                command = "lu"
-                # print(f"TOP LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
+        if xCommand == 's':
+            isXGood = True
 
-            # (>, <) - Top Right
-            elif finger[0] > center[0] and finger[1] < center[1]:
-                XdistanceToCenter = finger[0] - center[0]
-                YdistanceToCenter = center[1] - finger[1]
-                command = "ru"
-                # print(f"TOP RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
-            
-            # (<, >) - Bottom Left
-            elif finger[0] < center[0] and finger[1] > center[1]:
-                XdistanceToCenter = center[0] - finger[0]
-                YdistanceToCenter = finger[1] - center[1]
-                command = "ld"
-                # print(f"BOTTOM LEFT - {XdistanceToCenter}, {YdistanceToCenter}")
+            if y > 260:
+                yCommand = 'd'
+            elif y < 220:
+                yCommand = 'u' 
+            else:
+                yCommand = 's'
 
-            # (>, >) - Bottom Right
-            elif finger[0] > center[0] and finger[1] > center[1]:
-                XdistanceToCenter = finger[0] - center[0]
-                YdistanceToCenter = finger[1] - center[1]
-                command = "rd"
-                # print(f"BOTTOM RIGHT - {XdistanceToCenter}, {YdistanceToCenter}")
-    else:
-        command = "ss"
-    
-    print(command)
-    arduino.write(str.encode(command))
+            if isYGood == False:
+                print(yCommand)
+                arduino.write(str.encode(yCommand))
+
+            if yCommand == 's':
+                isYGood = True
 
     # center box plotting
     cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
@@ -81,20 +72,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-
-# if x > int(640 / 2):
-#     xCommand = 'r'
-# elif x < int(640 / 2):
-#     xCommand = 'l' 
-# else:
-#     xCommand = 's'
-
-# if y > int(480 / 2):
-#     yCommand = 'd'
-# elif y < int(480 / 2):
-#     yCommand = 'u' 
-# else:
-#     yCommand = 's'
-
-# # command = xCommand + yCommand
