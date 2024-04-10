@@ -29,8 +29,8 @@ while True:
             hand1FingerX, hand1FingerY = lmList1[8][0:2]
             
             # finger plotting
-            cv2.line(img, (hand1FingerX-50,hand1FingerY), (hand1FingerX+50,hand1FingerY), (0, 0, 255), 10, 10)
-            cv2.line(img, (hand1FingerX,hand1FingerY-50), (hand1FingerX,hand1FingerY+50), (0, 0, 255), 10, 10)
+            cv2.line(img, (hand1FingerX-50,hand1FingerY), (hand1FingerX+50,hand1FingerY), (0, 0, 255), 3, 3)
+            cv2.line(img, (hand1FingerX,hand1FingerY-50), (hand1FingerX,hand1FingerY+50), (0, 0, 255), 3, 3)
 
         if len(hands) == 2:
             hand2 = hands[1]
@@ -41,8 +41,8 @@ while True:
                 hand2FingerX, hand2FingerY = lmList2[8][0:2]
                 
                 # finger plotting
-                cv2.line(img, (hand2FingerX-50,hand2FingerY), (hand2FingerX+50,hand2FingerY), (0, 0, 255), 10, 10)
-                cv2.line(img, (hand2FingerX,hand2FingerY-50), (hand2FingerX,hand2FingerY+50), (0, 0, 255), 10, 10)
+                cv2.line(img, (hand2FingerX-50,hand2FingerY), (hand2FingerX+50,hand2FingerY), (0, 0, 255), 3, 3)
+                cv2.line(img, (hand2FingerX,hand2FingerY-50), (hand2FingerX,hand2FingerY+50), (0, 0, 255), 3, 3)
 
 
 
