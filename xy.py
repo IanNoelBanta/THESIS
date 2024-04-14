@@ -3,9 +3,9 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM7', baudrate=9600, timeout=0)
+# arduino = serial.Serial(port = 'COM7', baudrate=9600, timeout=0)
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 detector = HandDetector(staticMode=False, maxHands=5, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
 
@@ -41,7 +41,7 @@ while True:
 
         if isXGood == False:
             print(xCommand)
-            arduino.write(str.encode(xCommand))
+            # arduino.write(str.encode(xCommand))
 
         if xCommand == 's':
             isXGood = True
@@ -55,10 +55,12 @@ while True:
 
             if isYGood == False:
                 print(yCommand)
-                arduino.write(str.encode(yCommand))
+                # arduino.write(str.encode(yCommand))
 
             if yCommand == 's':
                 isYGood = True
+                isXGood = False
+                isYGood = False
 
     # center box plotting
     cv2.rectangle(img, centerBoxStart, centerBoxEnd, (0, 255, 0), 10, 10)
