@@ -52,7 +52,7 @@ while True:
                         xCommand = 's'
 
                     if isXGood == False:
-                        print(xCommand)
+                        print(f"Hand {handIndex+1}: X-Direction Command: {xCommand}")
                         # arduino.write(str.encode(xCommand))
 
                     if xCommand == 's':
@@ -66,7 +66,7 @@ while True:
                             yCommand = 's'
 
                         if isYGood == False:
-                            print(yCommand)
+                            print(f"Hand {handIndex+1}: Y-Direction Command: {yCommand}")
                             # arduino.write(str.encode(yCommand))
 
                         if yCommand == 's':

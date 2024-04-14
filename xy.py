@@ -3,7 +3,7 @@ import cv2
 import serial
 import time
 
-arduino = serial.Serial(port = 'COM7', baudrate=9600, timeout=0)
+arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
 cap = cv2.VideoCapture(1)
 
