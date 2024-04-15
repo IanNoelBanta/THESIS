@@ -27,11 +27,10 @@ while True:
         for handIndex, hand in enumerate(hands):
             lmList = hand["lmList"]  
             handNumber = (detector.fingersUp(hand)).count(1)
-
-            if handIndex == 0:  # Focus on the  first detected hand
+                                                        
+            if handIndex == 0: 
                 if handNumber >= 1:  
                     
-                    # Detected hands
                     cv2.putText(img, f"{handIndex+1}: {handNumber} finger(s)", (lmList[8][0], lmList[8][1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2, cv2.LINE_AA)
                     
                     handFingerX, handFingerY = lmList[8][0:2]

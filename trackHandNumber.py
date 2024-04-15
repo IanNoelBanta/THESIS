@@ -1,4 +1,3 @@
-from cvzone.HandTrackingModule import HandDetector
 import cv2
 import serial
 import time
