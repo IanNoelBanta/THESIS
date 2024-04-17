@@ -14,7 +14,7 @@ track_history = defaultdict(lambda: [])
 model = YOLO("best.pt")
 names = model.model.names
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -33,7 +33,7 @@ isYGood = False
 
 
 while True:
-    success, frame = cap.read()
+    success, frame = cap.read(0)
     if not success:
         print("Error reading frame")
         break
