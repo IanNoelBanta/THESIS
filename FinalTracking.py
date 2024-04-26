@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import serialq
 from ultralytics import YOLO
 
 from ultralytics.utils.checks import check_imshow
@@ -10,11 +11,13 @@ from collections import defaultdict
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
+arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
+
 track_history = defaultdict(lambda: [])
-model = YOLO("best.pt")
+model = YOLO("best500n.pt")
 names = model.model.names
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -33,12 +36,12 @@ isYGood = False
 
 
 while True:
-    success, frame = cap.read(0)
+    success, frame = cap.read()
     if not success:
         print("Error reading frame")
         break
 
-    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", imgsz=[640, 480])
+    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", imgsz=[640, 480], classes=[1])
     boxes = results[0].boxes.xyxy.cpu()
 
     cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
@@ -60,6 +63,8 @@ while True:
 
         targetX1, targetY1, targetX2, targetY2 = int(boxes[0][0]), int(boxes[0][1]), int(boxes[0][2]), int(boxes[0][3])
         
+        targetY1Offset = targetY1 - 75
+        
         targetXCenter, targetYCenter = int((targetX1 + targetX2) / 2), int((targetY1 + targetY2) / 2)
 
         targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1 - 10), (targetXCenter, targetY1 + 10) 
@@ -69,31 +74,31 @@ while True:
         cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
 
         if targetXCenter > CAM_RIGHT_TOLERANCE:
-            xCommand = 'r'
+            xCommand = 'l'
         elif targetXCenter < CAM_LEFT_TOLERANCE:
-            xCommand = 'l' 
+            xCommand = 'r' 
         else:
-            xCommand = 'xs'
+            xCommand = 'x'
 
         if isXGood == False:
             print(xCommand)
-            # arduino.write(str.encode(xCommand))
+            arduino.write(str.encode(xCommand))
 
-        if xCommand == 'xs':
+        if xCommand == 'x':
             isXGood = True
 
-            if targetY1 > 260:
+            if targetY1Offset > 260:
                 yCommand = 'd'
-            elif targetY1 < 220:
+            elif targetY1Offset < 220:
                 yCommand = 'u' 
             else:
-                yCommand = 'ys'
+                yCommand = 'y'
 
             if isYGood == False:
                 print(yCommand)
-                # arduino.write(str.encode(yCommand))
+                arduino.write(str.encode(yCommand))
 
-            if yCommand == 'ys':
+            if yCommand == 'y':
                 isYGood = True
 
         if cv2.waitKey(1) & 0xFF == ord("n"):
