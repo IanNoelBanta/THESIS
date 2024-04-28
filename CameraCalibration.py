@@ -36,13 +36,13 @@ while True:
         print("Error reading frame")
         break
 
-    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", imgsz=[640, 480], classes=[1])
+    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", classes=[1])
     boxes = results[0].boxes.xyxy.cpu()
 
     cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
     cv2.line(frame, (CAM_RIGHT_TOLERANCE, 0), (CAM_RIGHT_TOLERANCE, 480), (255, 0, 0), 3) # right vertical line
-    cv2.line(frame, (0, CAM_TOP_TOLERANCE), (640, CAM_TOP_TOLERANCE), (255, 0, 0), 3) # top horizontal line
-    cv2.line(frame, (0, CAM_BOTTOM_TOLERANCE), (640, CAM_BOTTOM_TOLERANCE), (255, 0, 0), 3) # bottom horizontal line
+    cv2.line(frame, (0, CAM_TOP_TOLERANCE), (640, CAM_TOP_TOLERANCE), (0, 0, 255), 3) # top horizontal line
+    cv2.line(frame, (0, CAM_BOTTOM_TOLERANCE), (640, CAM_BOTTOM_TOLERANCE), (0, 0, 255), 3) # bottom horizontal line
 
 
     if results[0].boxes.id is not None:
