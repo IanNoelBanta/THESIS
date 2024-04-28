@@ -1,9 +1,9 @@
 import cv2
-import numpy as np
-import serialq
+# import numpy as np
+import serial
 from ultralytics import YOLO
 
-from ultralytics.utils.checks import check_imshow
+# from ultralytics.utils.checks import check_imshow
 from ultralytics.utils.plotting import Annotator, colors
 
 from collections import defaultdict
@@ -13,7 +13,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
-track_history = defaultdict(lambda: [])
+# track_history = defaultdict(lambda: [])
 model = YOLO("best500n.pt")
 names = model.model.names
 
@@ -41,13 +41,13 @@ while True:
         print("Error reading frame")
         break
 
-    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", imgsz=[640, 480], classes=[1])
+    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", classes=[1])
     boxes = results[0].boxes.xyxy.cpu()
 
     cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
     cv2.line(frame, (CAM_RIGHT_TOLERANCE, 0), (CAM_RIGHT_TOLERANCE, 480), (255, 0, 0), 3) # right vertical line
-    cv2.line(frame, (0, CAM_TOP_TOLERANCE), (640, CAM_TOP_TOLERANCE), (255, 0, 0), 3) # top horizontal line
-    cv2.line(frame, (0, CAM_BOTTOM_TOLERANCE), (640, CAM_BOTTOM_TOLERANCE), (255, 0, 0), 3) # bottom horizontal line
+    cv2.line(frame, (0, CAM_TOP_TOLERANCE), (640, CAM_TOP_TOLERANCE), (0, 0, 255), 3) # top horizontal line
+    cv2.line(frame, (0, CAM_BOTTOM_TOLERANCE), (640, CAM_BOTTOM_TOLERANCE), (0, 0, 255), 3) # bottom horizontal line
 
 
     if results[0].boxes.id is not None:
@@ -63,12 +63,12 @@ while True:
 
         targetX1, targetY1, targetX2, targetY2 = int(boxes[0][0]), int(boxes[0][1]), int(boxes[0][2]), int(boxes[0][3])
         
-        targetY1Offset = targetY1 - 75
+        targetY1Offset = targetY1 - 100 #75
         
         targetXCenter, targetYCenter = int((targetX1 + targetX2) / 2), int((targetY1 + targetY2) / 2)
 
-        targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1 - 10), (targetXCenter, targetY1 + 10) 
-        targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetY1), (targetXCenter + 10, targetY1)
+        targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1Offset - 10), (targetXCenter, targetY1Offset + 10) 
+        targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetY1Offset), (targetXCenter + 10, targetY1Offset)
 
         cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
         cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
@@ -87,9 +87,9 @@ while True:
         if xCommand == 'x':
             isXGood = True
 
-            if targetY1Offset > 260:
+            if targetY1Offset > CAM_BOTTOM_TOLERANCE:
                 yCommand = 'd'
-            elif targetY1Offset < 220:
+            elif targetY1Offset < CAM_TOP_TOLERANCE:
                 yCommand = 'u' 
             else:
                 yCommand = 'y'
@@ -100,11 +100,12 @@ while True:
 
             if yCommand == 'y':
                 isYGood = True
+                arduino.write(str.encode('z'))
 
         if cv2.waitKey(1) & 0xFF == ord("n"):
             track_ids.pop(0)
         
-        print(f"{track_ids} : {track_ids[0]}")
+        # print(f"{track_ids} : {track_ids[0]}")
 
     cv2.imshow("Real-time Object Tracking", frame)
     
