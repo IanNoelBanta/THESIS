@@ -28,8 +28,8 @@ while True:
         print("Error reading frame")
         break
 
-    # results = model.track(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.8, verbose=False, persist=True) # detect
-    results = model.predict(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.8, verbose=False) # detect
+    # results = model.track(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.8, verbose=False) # detect
+    results = model.predict(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.75, verbose=False) # detect
 
 
     if results[0]:
