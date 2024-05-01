@@ -36,7 +36,7 @@ while True:
         print("Error reading frame")
         break
 
-    results = model.track(frame, persist=True, verbose=False, tracker="bytetrack.yaml", classes=[1])
+    results = model.track(frame, verbose=False, classes=[1])
     boxes = results[0].boxes.xyxy.cpu()
 
     cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
@@ -58,12 +58,18 @@ while True:
 
         targetX1, targetY1, targetX2, targetY2 = int(boxes[0][0]), int(boxes[0][1]), int(boxes[0][2]), int(boxes[0][3])
         
-        targetY1Offset = targetY1 - 75
+        targetY1Offset = targetY1 - 10
         
         targetXCenter, targetYCenter = int((targetX1 + targetX2) / 2), int((targetY1 + targetY2) / 2)
 
-        targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1Offset - 10), (targetXCenter, targetY1Offset + 10) 
-        targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetY1Offset), (targetXCenter + 10, targetY1Offset)
+        # targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1Offset - 10), (targetXCenter, targetY1Offset + 10) 
+        # targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetY1Offset), (targetXCenter + 10, targetY1Offset)
+
+        # cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
+        # cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
+        
+        targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetYCenter - 10), (targetXCenter, targetYCenter + 10) 
+        targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetYCenter), (targetXCenter + 10, targetYCenter)
 
         cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
         cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
