@@ -14,7 +14,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
 # track_history = defaultdict(lambda: [])
-model = YOLO("best500n.pt")
+model = YOLO("bestn.pt")
 names = model.model.names
 
 cap = cv2.VideoCapture(1)
