@@ -3,11 +3,13 @@ import cv2
 import serial
 from ultralytics import YOLO
 
-arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
+# arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
-model = YOLO("best500n.pt")
+model = YOLO("v8270.pt")
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -18,6 +20,11 @@ CAM_LEFT_TOLERANCE = CAM_X_CENTER - TOLERANCE
 CAM_RIGHT_TOLERANCE = CAM_X_CENTER + TOLERANCE
 CAM_TOP_TOLERANCE = CAM_Y_CENTER - TOLERANCE
 CAM_BOTTOM_TOLERANCE = CAM_Y_CENTER + TOLERANCE
+
+FONT = cv2.FONT_HERSHEY_SIMPLEX
+FONTSCL = 1
+COLOR = (255, 0, 0) 
+THICKNESS = 2
 
 xCommand = ""
 yCommand = ""
@@ -34,12 +41,13 @@ while True:
         print("Error reading frame")
         break
 
-    results = model.track(frame, verbose=False, classes=[1], max_det=1, stream_buffer=True, conf=0.8)
+    results = model.track(frame, verbose=False, classes=[1], stream_buffer=True, conf=0.7, persist=True, tracker="botsort.yaml")
     # results = model.track(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.5, verbose=False) # detect
     # results = model.predict(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.75, verbose=False) # detect
 
 
     if results[0]:
+        cv2.putText(frame, f"DETECTED:{len(results[0])}", (0, 50), FONT, FONTSCL, COLOR, THICKNESS, cv2.LINE_AA)
         frame = results[0].plot() # plot lahat ng detections
         targetX1 = int(results[0].boxes.xyxy.cpu().numpy()[0][0])
         targetY1 = int(results[0].boxes.xyxy.cpu().numpy()[0][1])
@@ -60,11 +68,7 @@ while True:
         targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetYCenter), (targetXCenter + 10, targetYCenter)
 
         cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
-        cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
-
-        cv2.line(frame, (CAM_X_CENTER - 50, CAM_Y_CENTER - 50), (CAM_X_CENTER + 50, CAM_Y_CENTER - 50), (0, 255, 0), 3) # crosshair horizontal line
-        cv2.line(frame, (CAM_X_CENTER - 50, CAM_Y_CENTER + 50), (CAM_X_CENTER + 50, CAM_Y_CENTER + 50), (0, 255, 0), 3) # crosshair vertical line
-
+        cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
 
         if targetXCenter > CAM_RIGHT_TOLERANCE:
             xCommand = 'l'
@@ -74,8 +78,9 @@ while True:
             xCommand = 'x'
 
         if isXGood == False:
-            print(xCommand)
-            arduino.write(str.encode(xCommand))
+            pass
+            # print(xCommand)
+            # arduino.write(str.encode(xCommand))
 
         if xCommand == 'x':
             isXGood = True
@@ -88,19 +93,20 @@ while True:
                 yCommand = 'y'
 
             if isYGood == False:
-                print(yCommand)
-                arduino.write(str.encode(yCommand))
+                pass
+                # print(yCommand)
+                # arduino.write(str.encode(yCommand))
 
             if yCommand == 'y':
                 isYGood = True
-                print('z')
-                arduino.write(str.encode('z'))
+                # print('z')
+                # arduino.write(str.encode('z'))
                 
-                time.sleep(10)
-                # reset all for next target
-                print("RESET")
-                isXGood = False
-                isYGood = False
+                # time.sleep(10)
+                # # reset all for next target
+                # # print("RESET")
+                # isXGood = False
+                # isYGood = False
     else:
         if isXGood:
             pass
@@ -114,8 +120,9 @@ while True:
             #         print("LAST MOVE: D -> GO UP")
             #         arduino.write(str.encode('u'))
         elif isXGood == False:
-            print("NO DETECTION -> GO RIGHT")
-            arduino.write(str.encode('r'))
+            pass
+            # print("NO DETECTION -> GO RIGHT")
+            # arduino.write(str.encode('r'))
         
 
 
