@@ -29,14 +29,17 @@ yCommand = ""
 isXGood = False
 isYGood = False
 
+mask = cv2.imread("mask.png")
 
 while True:
     success, frame = cap.read()
+    frame = cv2.bitwise_and(frame, mask)
+    
     if not success:
         print("Error reading frame")
         break
 
-    results = model.track(frame, verbose=False, classes=[1])
+    results = model.track(frame, verbose=False, classes=[1], max_det=1, stream_buffer=True, conf=0.8)
     boxes = results[0].boxes.xyxy.cpu()
 
     cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
