@@ -3,13 +3,13 @@ import cv2
 import serial
 from ultralytics import YOLO
 
-# arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
+arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
-model = YOLO("v8270.pt")
+model = YOLO("v8-500.pt")
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -30,6 +30,9 @@ xCommand = ""
 yCommand = ""
 isXGood = False
 isYGood = False
+reverse = False
+goRightSent = 0
+goLeftSent = 0
 
 mask = cv2.imread("mask.png")
 
@@ -41,12 +44,13 @@ while True:
         print("Error reading frame")
         break
 
-    results = model.track(frame, verbose=False, classes=[1], stream_buffer=True, conf=0.7, persist=True, tracker="botsort.yaml")
+    results = model.track(frame, verbose=False, classes=[1], stream_buffer=True, max_det=1, persist=True, tracker="botsort.yaml")
     # results = model.track(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.5, verbose=False) # detect
     # results = model.predict(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.75, verbose=False) # detect
 
 
     if results[0]:
+        goRightSent = 0
         cv2.putText(frame, f"DETECTED:{len(results[0])}", (0, 50), FONT, FONTSCL, COLOR, THICKNESS, cv2.LINE_AA)
         frame = results[0].plot() # plot lahat ng detections
         targetX1 = int(results[0].boxes.xyxy.cpu().numpy()[0][0])
@@ -79,8 +83,8 @@ while True:
 
         if isXGood == False:
             pass
-            # print(xCommand)
-            # arduino.write(str.encode(xCommand))
+            print(xCommand)
+            arduino.write(str.encode(xCommand))
 
         if xCommand == 'x':
             isXGood = True
@@ -94,35 +98,29 @@ while True:
 
             if isYGood == False:
                 pass
-                # print(yCommand)
-                # arduino.write(str.encode(yCommand))
+                print(yCommand)
+                arduino.write(str.encode(yCommand))
 
             if yCommand == 'y':
                 isYGood = True
-                # print('z')
-                # arduino.write(str.encode('z'))
+                print('z')
+                arduino.write(str.encode('z'))
                 
-                # time.sleep(10)
+                time.sleep(10)
                 # # reset all for next target
-                # # print("RESET")
-                # isXGood = False
-                # isYGood = False
+                print("RESET")
+                isXGood = False
+                isYGood = False
     else:
-        if isXGood:
-            pass
-            # if isYGood:
-            #     pass
-            # else:
-            #     if yCommand == 'u':
-            #         print("LAST MOVE: U -> GO DOWN")
-            #         arduino.write(str.encode('d'))
-            #     else:
-            #         print("LAST MOVE: D -> GO UP")
-            #         arduino.write(str.encode('u'))
-        elif isXGood == False:
-            pass
-            # print("NO DETECTION -> GO RIGHT")
-            # arduino.write(str.encode('r'))
+        if isXGood == False and goRightSent == 0:
+            print("NO DETECTION -> GO RIGHT")
+            arduino.write(str.encode('r'))
+            goRightSent += 1
+            
+            
+            
+            
+            
         
 
 
