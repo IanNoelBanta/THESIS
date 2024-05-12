@@ -4,7 +4,7 @@ import cv2
 import serial
 from ultralytics import YOLO
 
-# arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
+arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
 model = YOLO("v8-500.pt")
 import os
@@ -39,6 +39,7 @@ mask = cv2.imread("mask.png")
 
 def tracking_loop():
     global model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE, FONT, FONTSCL, COLOR, THICKNESS, xCommand, yCommand, isXGood, isYGood, reverse, goRightSent, goLeftSent, mask
+    cap = cv2.VideoCapture(0)
     
     while True:
         success, frame = cap.read()
@@ -79,7 +80,7 @@ def tracking_loop():
             if isXGood == False:
                 pass
                 print(xCommand)
-                # arduino.write(str.encode(xCommand))
+                arduino.write(str.encode(xCommand))
 
             if xCommand == 'x':
                 isXGood = True
@@ -94,12 +95,12 @@ def tracking_loop():
                 if isYGood == False:
                     pass
                     print(yCommand)
-                    # arduino.write(str.encode(yCommand))
+                    arduino.write(str.encode(yCommand))
 
                 if yCommand == 'y':
                     isYGood = True
                     print('z')
-                    # arduino.write(str.encode('z'))
+                    arduino.write(str.encode('z'))
                     
                     time.sleep(10)
                     # # reset all for next target
@@ -109,7 +110,7 @@ def tracking_loop():
         else:
             if isXGood == False and goRightSent == 0:
                 print("NO DETECTION -> GO RIGHT")
-                # arduino.write(str.encode('r'))
+                arduino.write(str.encode('r'))
                 goRightSent += 1
 
         cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
@@ -126,12 +127,13 @@ def tracking_loop():
 
 def stop_opencv():
     global cap
+    arduino.write(str.encode('s'))
     cap.release()
     cv2.destroyAllWindows()
 
 def reset():
     global arduino
-    # arduino.write(str.encode('l'))
+    arduino.write(str.encode('l'))
     print("resetting from maskcopy")
 
 
