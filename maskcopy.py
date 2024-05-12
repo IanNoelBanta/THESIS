@@ -4,7 +4,7 @@ import cv2
 import serial
 from ultralytics import YOLO
 
-arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
+# arduino = serial.Serial(port = 'COM5', baudrate=9600, timeout=0)
 
 model = YOLO("v8-500.pt")
 import os
@@ -80,7 +80,7 @@ def tracking_loop():
             if isXGood == False:
                 pass
                 print(xCommand)
-                arduino.write(str.encode(xCommand))
+                # arduino.write(str.encode(xCommand))
 
             if xCommand == 'x':
                 isXGood = True
@@ -95,12 +95,12 @@ def tracking_loop():
                 if isYGood == False:
                     pass
                     print(yCommand)
-                    arduino.write(str.encode(yCommand))
+                    # arduino.write(str.encode(yCommand))
 
                 if yCommand == 'y':
                     isYGood = True
                     print('z')
-                    arduino.write(str.encode('z'))
+                    # arduino.write(str.encode('z'))
                     
                     time.sleep(10)
                     # # reset all for next target
@@ -127,13 +127,13 @@ def tracking_loop():
 
 def stop_opencv():
     global cap
-    arduino.write(str.encode('s'))
+    # arduino.write(str.encode('s'))
     cap.release()
     cv2.destroyAllWindows()
 
 def reset():
     global arduino
-    arduino.write(str.encode('l'))
+    # arduino.write(str.encode('l'))
     print("resetting from maskcopy")
 
 
