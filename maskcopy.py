@@ -39,8 +39,7 @@ mask = cv2.imread("mask.png")
 
 def tracking_loop():
     global model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE, FONT, FONTSCL, COLOR, THICKNESS, xCommand, yCommand, isXGood, isYGood, reverse, goRightSent, goLeftSent, mask
-
-
+    
     while True:
         success, frame = cap.read()
         frame = cv2.bitwise_and(frame, mask)
@@ -50,9 +49,6 @@ def tracking_loop():
             break
 
         results = model.track(frame, verbose=False, classes=[1], stream_buffer=True, max_det=1, persist=True, tracker="botsort.yaml")
-        # results = model.track(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.5, verbose=False) # detect
-        # results = model.predict(frame, classes=[1], max_det=1, stream_buffer=True, conf=0.75, verbose=False) # detect
-
 
         if results[0]:
             goRightSent = 0
@@ -67,12 +63,6 @@ def tracking_loop():
 
             targetXCenter, targetYCenter = int((targetX1 + targetX2) / 2), int((targetY1 + targetY2) / 2)
 
-            # targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetY1Offset - 10), (qtargetXCenter, targetY1Offset + 10) 
-            # targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetY1Offset), (targetXCenter + 10, targetY1Offset)
-
-            # cv2.line(frame, targetCrosshairVerticalStart, targetCrosshairVerticalEnd, (0, 0, 255), 3) # crosshair vertical line
-            # cv2.line(frame, targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd, (0, 0, 255), 3) # crosshair horizontal line
-            
             targetCrosshairVerticalStart, targetCrosshairVerticalEnd = (targetXCenter, targetYCenter - 10), (targetXCenter, targetYCenter + 10) 
             targetCrosshairHorizontalStart, targetCrosshairHorizontalEnd = (targetXCenter - 10, targetYCenter), (targetXCenter + 10, targetYCenter)
 
@@ -121,19 +111,13 @@ def tracking_loop():
                 print("NO DETECTION -> GO RIGHT")
                 # arduino.write(str.encode('r'))
                 goRightSent += 1
-                
-                
-                
-                
-                
-            
-
 
         cv2.line(frame, (CAM_LEFT_TOLERANCE, 0), (CAM_LEFT_TOLERANCE, 480), (255, 0, 0), 3) # left vertical line
         cv2.line(frame, (CAM_RIGHT_TOLERANCE, 0), (CAM_RIGHT_TOLERANCE, 480), (255, 0, 0), 3) # right vertical line
         cv2.line(frame, (0, CAM_TOP_TOLERANCE), (640, CAM_TOP_TOLERANCE), (0, 0, 255), 3) # top horizontal line
         cv2.line(frame, (0, CAM_BOTTOM_TOLERANCE), (640, CAM_BOTTOM_TOLERANCE), (0, 0, 255), 3) # bottom horizontal line
         cv2.imshow("Real-time Object Tracking", frame)
+        
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
@@ -148,6 +132,7 @@ def stop_opencv():
 def reset():
     global arduino
     # arduino.write(str.encode('l'))
+    print("resetting from maskcopy")
 
 
 def main():

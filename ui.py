@@ -4,12 +4,11 @@ from PIL import Image, ImageTk
 import time
 import serial
 from ultralytics import YOLO
+import threading
 
 root = Tk()
 root.geometry("1920x1080")
 root.title("AMPALAYAAAAAAAAAAAAAAWAAAA")
-
-# global model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE, FONT, FONTSCL, COLOR, THICKNESS, xCommand, yCommand, isXGood, isYGood, reverse, goRightSent, goLeftSent, mask
 
 model = YOLO("v8-500.pt")
 import os
@@ -45,7 +44,9 @@ mask = cv2.imread("mask.png")
 cam_on = False
 
 
-def start(model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE, FONT, FONTSCL, COLOR, THICKNESS, xCommand, yCommand, isXGood, isYGood, reverse, goRightSent, goLeftSent, mask):
+def start():
+    global model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE, FONT, FONTSCL, COLOR, THICKNESS, xCommand, yCommand, isXGood, isYGood, reverse, goRightSent, goLeftSent, mask
+
     if cam_on:
         success, frame = cap.read()  
         frame = cv2.bitwise_and(frame, mask)
@@ -127,40 +128,51 @@ def start(model, cap, CAM_X_CENTER, CAM_Y_CENTER, TOLERANCE, CAM_LEFT_TOLERANCE,
 
             vid_lbl.after(10, start)
 
+def main_opencv():
+    opencv_thread = threading.Thread(target=start)
+    opencv_thread.start()
+
+def main_loop():
+    root = Tk()
+    root.geometry("720x720")
+    root.title("AMPALAYAAAAAAAAAAAAAAWAAAA")
+
+    start_button = Button(
+    root,
+    text="START",
+    command=start_tracking 
+    )
+
+    stop_button = Button(
+        root,
+        text="STOP",
+        command=stop_tracking 
+    )
+
+    start_button.pack()
+    stop_button.pack()
+
+    root.mainloop()
+
 
 def start_tracking():
     global cam_on
     print("Starting tracking")
     cam_on = True
-    start(model=model, cap=cap, CAM_X_CENTER=CAM_X_CENTER, CAM_Y_CENTER=CAM_Y_CENTER, TOLERANCE=TOLERANCE, CAM_LEFT_TOLERANCE=CAM_LEFT_TOLERANCE, CAM_RIGHT_TOLERANCE=CAM_RIGHT_TOLERANCE, CAM_TOP_TOLERANCE=CAM_TOP_TOLERANCE, CAM_BOTTOM_TOLERANCE=CAM_BOTTOM_TOLERANCE, FONT=FONT, FONTSCL=FONTSCL, COLOR=COLOR, THICKNESS=THICKNESS, xCommand=xCommand, yCommand=yCommand, isXGood=isXGood, isYGood=isYGood, reverse=reverse, goRightSent=goRightSent, goLeftSent=goLeftSent, mask=mask)
+    main_opencv
 
 def stop_tracking():
-    global cam_on
+    global cam_on, vid_lbl
     print("Stop Tracking")
     cam_on = False
 
     if cap:
         cap.release()
-        # cv2.destroyAllWindows()
         vid_lbl.config(image="") 
-
-start_button = Button(
-    root,
-    text="START",
-    command=start_tracking 
-)
-
-stop_button = Button(
-    root,
-    text="STOP",
-    command=stop_tracking 
-)
-
+    
 vid_lbl = Label(root)
-
-start_button.pack()
-stop_button.pack()
 vid_lbl.pack()
 
 if __name__ == "__main__":
-    root.mainloop()
+    main_thread = threading.Thread(target=main_loop)
+    main_thread.start()
